@@ -17,6 +17,10 @@ function validateUser(user) {
     errors.push("Email is invalid");
   }
 
+  if (!user.usertype) {
+    errors.push("Please include usertype");
+  }
+
   return {
     isSuccessful: errors.length > 0 ? false : true,
     errors
