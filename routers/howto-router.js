@@ -1,18 +1,18 @@
 const router = require("express").Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const HowTo = require("../models/howto-model.js");
-// const { validateUser } = require("../helpers/auth-helper");
+const { validateHowTo } = require("../helpers/howto-helper");
+const Step = require("../models/step-model.js");
+const { validateStep, validateStepPost } = require("../helpers/step-helper");
 
 router.get("/", (req, res) => {
   HowTo.find()
     .then(howto => {
       res.json(howto);
     })
-    .catch(err =>
-      res.status.json({ message: "failed to get howtos", error: err })
-    );
+    .catch(err => {
+      res.status.json({ message: "failed to get howtos", error: err });
+    });
 });
 
 router.get("/:id", (req, res) => {
@@ -20,19 +20,131 @@ router.get("/:id", (req, res) => {
     .then(howto => {
       res.json(howto);
     })
-    .catch(err =>
-      res.status.json({ message: "failed to get howtos", error: err })
-    );
+    .catch(err => {
+      res.status(400).json({ message: "failed to get howtos", error: err });
+    });
 });
 
 router.post("/", (req, res) => {
-  HowTo.add(req.body)
+  let howto = req.body;
+  const validateResult = validateHowTo(howto);
+
+  if (validateResult.isSuccessful === true) {
+    HowTo.add(req.body)
+      .then(howto => {
+        res.json(howto);
+      })
+      .catch(err =>
+        res.status(400).json({ message: "failed to add howto", error: err })
+      );
+  } else {
+    res
+      .status(400)
+      .json({ message: "invalid howto info", errors: validateResult.errors });
+  }
+});
+
+router.put("/:id", (req, res) => {
+  let howto = req.body;
+  const validateResult = validateHowTo(howto);
+
+  if (validateResult.isSuccessful === true) {
+    HowTo.update(req.params.id, req.body)
+      .then(howto => {
+        res.json(howto);
+      })
+      .catch(err =>
+        res.status(400).json({ message: "failed to update howto", error: err })
+      );
+  } else {
+    res
+      .status(400)
+      .json({ message: "invalid howto info", errors: validateResult.errors });
+  }
+});
+
+router.delete("/:id", (req, res) => {
+  HowTo.remove(req.params.id)
     .then(howto => {
       res.json(howto);
     })
-    .catch(err =>
-      res.status.json({ message: "failed to add howto", error: err })
-    );
+    .catch(err => {
+      res.status(401).json({ message: "record not deleted", error: err });
+    });
+});
+
+router.get("/:id/steps", (req, res) => {
+  Step.find(req.params.id)
+    .then(step => {
+      res.json(step);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ message: "failed to get steps", error: err });
+    });
+});
+
+router.get("/:id/steps/:number", (req, res) => {
+  Step.findByStep(req.params.id, req.params.number)
+    .then(step => {
+      res.json(step);
+    })
+    .catch(err => {
+      res.status(400).json({ message: "failed to get step", error: err });
+    });
+});
+
+router.post("/:id/steps", (req, res) => {
+  let step = {
+    number: req.body.number,
+    instruction: req.body.instruction,
+    howto_id: req.params.id
+  };
+  const validateResult = validateStepPost(step);
+
+  if (validateResult.isSuccessful === true) {
+    Step.add(step)
+      .then(step => {
+        res.json(step);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(400).json({ message: "failed to add step", error: err });
+      });
+  } else {
+    res
+      .status(400)
+      .json({ message: "invalid step info", errors: validateResult.errors });
+  }
+});
+
+router.put("/:id/steps/:number", (req, res) => {
+  let step = req.body;
+  const validateResult = validateStep(step);
+
+  if (validateResult.isSuccessful === true) {
+    Step.update(req.params.id, req.params.number, step)
+      .then(step => {
+        res.json(step);
+      })
+      .catch(err =>
+        res.status(400).json({ message: "failed to update step", error: err })
+      );
+  } else {
+    res
+      .status(400)
+      .json({ message: "invalid step info", errors: validateResult.errors });
+  }
+});
+
+router.delete("/:id/steps/:number", (req, res) => {
+  Step.remove(req.params.id, req.params.number)
+    .then(step => {
+      res.json(step);
+    })
+    .catch(err => {
+      res.status(401).json({ message: "record not deleted", error: err });
+    });
 });
 
 module.exports = router;
