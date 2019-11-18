@@ -2,6 +2,7 @@ const db = require("../data/dbConfig.js");
 
 module.exports = {
   add,
+  remove,
   find,
   findByUser,
   findById,
@@ -13,7 +14,6 @@ function find() {
 }
 
 function findByUser(userid) {
-  // make sure to include the role information
   return db("howtos").where({ user_id: userid });
 }
 
@@ -37,4 +37,10 @@ function update(id, payload) {
   return db("howtos")
     .where({ id })
     .update(payload);
+}
+
+function remove(id) {
+  return db("howtos")
+    .where({ id })
+    .del();
 }
