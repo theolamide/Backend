@@ -43,6 +43,27 @@ exports.up = function(knex) {
 
       steps.integer("number").notNullable();
       steps.string("instruction").notNullable();
+    })
+    .createTable("likes", likes => {
+      likes.increments();
+
+      likes
+        .integer("howto_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("howtos")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
+
+      likes
+        .integer("user_id")
+        .unsigned()
+        .notNullable()
+        .references("id")
+        .inTable("users")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
     });
 };
 
