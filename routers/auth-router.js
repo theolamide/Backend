@@ -43,6 +43,7 @@ router.post("/login", (req, res) => {
         // 3: send the token to the client
         res.status(200).json({
           message: `Welcome ${user.username}! have a token...`,
+          user_id: user.id,
           token: token
         });
       } else {
