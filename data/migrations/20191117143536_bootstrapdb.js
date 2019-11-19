@@ -12,7 +12,7 @@ exports.up = function(knex) {
         .string("email", 255)
         .unique()
         .notNullable();
-      users.integer("usertype").notNullable();
+      users.string("usertype").notNullable();
     })
     .createTable("howtos", howtos => {
       howtos.increments();
@@ -69,6 +69,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return knex.schema
+    .dropTableIfExists("likes")
     .dropTableIfExists("steps")
     .dropTableIfExists("howtos")
     .dropTableIfExists("users");
