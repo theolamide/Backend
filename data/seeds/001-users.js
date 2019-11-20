@@ -2,8 +2,8 @@ exports.seed = function(knex) {
   return knex("users").insert([
     {
       id: 1,
-      username: "rowValue1",
-      password: "bob",
+      username: "user",
+      password: "password",
       email: "bob",
       usertype: 1
     },
