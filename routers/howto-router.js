@@ -4,6 +4,8 @@ const HowTo = require("../models/howto-model.js");
 const { validateHowTo } = require("../helpers/howto-helper");
 const Step = require("../models/step-model.js");
 const { validateStep, validateStepPost } = require("../helpers/step-helper");
+const Like = require("../models/likes-model.js");
+const { validateLike, validateLikePost } = require("../helpers/likes-helper");
 
 router.get("/", (req, res) => {
   HowTo.find()
@@ -144,6 +146,65 @@ router.delete("/:id/steps/:number", (req, res) => {
     })
     .catch(err => {
       res.status(401).json({ message: "record not deleted", error: err });
+    });
+});
+
+router.get("/likes", (req, res) => {
+  Like.find()
+    .then(like => {
+      res.json(like);
+    })
+    .catch(err => {
+      res.status.json({ message: "failed to get likes", error: err });
+    });
+});
+
+router.get("/:id/likes", (req, res) => {
+  Like.findByHowTo(req.params.id)
+    .then(like => {
+      res.json(like);
+    })
+    .catch(err => {
+      res.status(400).json({ message: "failed to get likes", error: err });
+    });
+});
+
+router.get("/:id/likes", (req, res) => {
+  Like.findByUser(req.body)
+    .then(like => {
+      res.json(like);
+    })
+    .catch(err => {
+      res.status(400).json({ message: "failed to get likes", error: err });
+    });
+});
+
+router.post("/likes", (req, res) => {
+  let like = req.body;
+  const validateResult = validateLikePost(like);
+
+  if (validateResult.isSuccessful === true) {
+    Like.add(req.body)
+      .then(like => {
+        res.json(like);
+      })
+      .catch(err =>
+        res.status(400).json({ message: "failed to add like", error: err })
+      );
+  } else {
+    res
+      .status(400)
+      .json({ message: "invalid like info", errors: validateResult.errors });
+  }
+});
+
+router.delete("/:id/likes", (req, res) => {
+  Like.remove(req.params.id)
+    .then(like => {
+      res.json(like);
+    })
+    .catch(err => {
+      res.status(401).json({ message: "like not deleted", error: err });
     });
 });
 
