@@ -10,7 +10,15 @@ module.exports = {
 };
 
 function find() {
-  return db("howtos");
+  return db("howtos")
+    .join("users", "howtos.user_id", "users.id")
+    .select(
+      "howtos.name",
+      "howtos.desc",
+      "howtos.user_id",
+      "howtos.id",
+      "users.username"
+    );
 }
 
 function findByUser(userid) {

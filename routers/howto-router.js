@@ -13,7 +13,8 @@ router.get("/", (req, res) => {
       res.json(howto);
     })
     .catch(err => {
-      res.status.json({ message: "failed to get howtos", error: err });
+      console.log(err);
+      res.status(401).json({ message: "failed to get howtos", error: err });
     });
 });
 
