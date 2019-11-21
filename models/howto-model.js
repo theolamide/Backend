@@ -23,14 +23,12 @@ async function add(howto) {
 }
 
 function findById(id) {
-  return (
-    db("howtos")
-      .where({ id })
-      .first(),
-    db("steps")
-      .select("number", "instruction")
-      .where({ howto_id: id })
-  );
+  return db("howtos")
+    .where({ id })
+    .first();
+  // db("steps")
+  //   .select("number", "instruction")
+  //   .where({ howto_id: id })
 }
 
 function update(id, payload) {
