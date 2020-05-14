@@ -39,11 +39,13 @@ router.post("/login", (req, res) => {
       if (user && bcrypt.compareSync(password, user.password)) {
         // 2: produce a token
         const token = getJwtToken(user.username);
+        // console.log("login Token", token)
 
         // 3: send the token to the client
         res.status(200).json({
           message: `Welcome ${user.username}! have a token...`,
           user_id: user.id,
+          username: user.username,
           token: token
         });
       } else {

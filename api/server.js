@@ -15,6 +15,7 @@ server.use(express.json());
 
 server.use("/api/auth", authRouter);
 server.use("/api/howtos", authenticate, howtoRouter);
+// server.use("/api/howtos", howtoRouter);
 // server.use("/api/howtos/:id/steps", authenticate, stepRouter);
 
 module.exports = server;

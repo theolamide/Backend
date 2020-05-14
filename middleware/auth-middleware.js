@@ -5,6 +5,7 @@ module.exports = (req, res, next) => {
 
   if (token) {
     const secret = process.env.JWT_SECRET || "is it secret, is it safe?";
+    // console.log(token)
 
     jwt.verify(token, secret, (err, decodedToken) => {
       if (err) {
