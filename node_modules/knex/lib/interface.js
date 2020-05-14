@@ -1,4 +1,6 @@
-const { isEmpty, map, clone, each } = require('lodash');
+const { isEmpty, map, clone } = require('lodash');
+const { callbackify } = require('util');
+const finallyMixin = require('./util/finally-mixin');
 
 module.exports = function(Target) {
   Target.prototype.toQuery = function(tz) {
@@ -80,31 +82,19 @@ module.exports = function(Target) {
     );
   };
 
-  // Creates a method which "coerces" to a promise, by calling a
-  // "then" method on the current `Target`
-  each(
-    [
-      'bind',
-      'catch',
-      'finally',
-      'asCallback',
-      'spread',
-      'map',
-      'reduce',
-      'thenReturn',
-      'return',
-      'yield',
-      'ensure',
-      'reflect',
-      'get',
-      'mapSeries',
-      'delay',
-    ],
-    function(method) {
-      Target.prototype[method] = function() {
-        const promise = this.then();
-        return promise[method].apply(promise, arguments);
-      };
-    }
-  );
+  Target.prototype.asCallback = function(cb) {
+    const promise = this.then();
+    callbackify(() => promise)(cb);
+    return promise;
+  };
+
+  Target.prototype.catch = function(onReject) {
+    return this.then().catch(onReject);
+  };
+
+  Object.defineProperty(Target.prototype, Symbol.toStringTag, {
+    get: () => 'object',
+  });
+
+  finallyMixin(Target.prototype);
 };
